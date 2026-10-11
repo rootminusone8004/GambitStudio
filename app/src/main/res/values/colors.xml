@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand Orange Colors -->
+    <color name="primaryOrange">#E64A19</color>
+    <color name="primaryOrangeDark">#D84315</color>
+    <color name="primaryOrangeLight">#FF7043</color>
+    <color name="orangeAccent">#FF5722</color>
+
+    <!-- Surfaces & Backgrounds -->
+    <color name="customDarkBackground">#2C2C2C</color>
+    <color name="customCard">#363636</color>
+    <color name="customSurfaceElevated">#424242</color>
+    <color name="customSurfaceDarker">#1E1E1E</color>
+
+    <!-- Text & Hints -->
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="textPrimary">#FFFFFF</color>
+    <color name="textSecondary">#BDBDBD</color>
+    <color name="editTextHintColor">#8D8D8D</color>
+
+    <!-- Chess Board Colors -->
+    <color name="lichess_board_light">#F6E1CE</color>
+    <color name="lichess_board_dark">#BD5E38</color>
+    <color name="lichess_last_move_light">#85C246</color>
+    <color name="lichess_last_move_dark">#68A334</color>
+    <color name="lichess_selected_square">#78B83D</color>
+    <color name="lichess_selected_square_light">#8CC64B</color>
+    <color name="lichess_selected_square_dark">#6DA937</color>
+    <color name="lichess_check_square">#E53935</color>
+    <color name="lichess_legal_move_dot">#66000000</color>
+    <color name="lichess_coordinate_light">#BD5E38</color>
+    <color name="lichess_coordinate_dark">#F6E1CE</color>
+
+    <!-- Status Colors -->
+    <color name="status_green">#4CAF50</color>
+    <color name="status_amber">#FFC107</color>
+    <color name="status_red">#F44336</color>
+</resources>

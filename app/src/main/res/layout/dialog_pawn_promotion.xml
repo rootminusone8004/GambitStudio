@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_rounded_card"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/promotion_title"
+        android:textColor="@color/primaryOrange"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnPromoteQueen"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/bg_circle_icon"
+            android:contentDescription="@string/piece_queen"
+            android:padding="8dp"
+            android:scaleType="fitCenter" />
+
+        <ImageButton
+            android:id="@+id/btnPromoteRook"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/bg_circle_icon"
+            android:contentDescription="@string/piece_rook"
+            android:padding="8dp"
+            android:scaleType="fitCenter" />
+
+        <ImageButton
+            android:id="@+id/btnPromoteBishop"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/bg_circle_icon"
+            android:contentDescription="@string/piece_bishop"
+            android:padding="8dp"
+            android:scaleType="fitCenter" />
+
+        <ImageButton
+            android:id="@+id/btnPromoteKnight"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/bg_circle_icon"
+            android:contentDescription="@string/piece_knight"
+            android:padding="8dp"
+            android:scaleType="fitCenter" />
+
+    </LinearLayout>
+
+</LinearLayout>

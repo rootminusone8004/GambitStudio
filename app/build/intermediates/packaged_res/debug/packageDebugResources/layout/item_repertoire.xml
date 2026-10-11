@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_rounded_card"
+    android:backgroundTint="@color/customSurfaceDarker"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Header Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvOpeningName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rousseau Gambit"
+                android:textColor="@color/textPrimary"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvOpeningDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Black • 2 variation lines • rousseau_gambit.txt"
+                android:textColor="@color/textSecondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvSideBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_pill"
+            android:backgroundTint="@color/customSurfaceElevated"
+            android:paddingStart="10dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="4dp"
+            android:text="Black"
+            android:textColor="@color/primaryOrangeLight"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- Base Line Preview -->
+    <TextView
+        android:id="@+id/tvOpeningMoves"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="monospace"
+        android:maxLines="2"
+        android:text="1. e4 e5 2. Nf3 Nc6 3. Bc4 f5..."
+        android:textColor="@color/textSecondary"
+        android:textSize="12sp" />
+
+    <!-- Action Buttons Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTrain"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/primaryOrange"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Train / Add Lines"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:cornerRadius="10dp"
+            app:icon="@drawable/ic_school"
+            app:iconPadding="4dp"
+            app:iconSize="16dp"
+            app:iconTint="@color/white" />
+
+        <ImageButton
+            android:id="@+id/btnViewFile"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="View / Copy text"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_visibility"
+            app:tint="@color/primaryOrangeLight" />
+
+        <ImageButton
+            android:id="@+id/btnExport"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Export .txt file"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_save"
+            app:tint="@color/textSecondary" />
+
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Delete Opening"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_delete"
+            app:tint="@color/status_red" />
+
+    </LinearLayout>
+
+</LinearLayout>

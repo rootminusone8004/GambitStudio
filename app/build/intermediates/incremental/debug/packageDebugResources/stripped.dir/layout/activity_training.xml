@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/customDarkBackground"
+    android:orientation="vertical">
+
+    <!-- Top Toolbar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="12dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/textPrimary" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTrainingTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Create Opening File"
+                android:textColor="@color/primaryOrange"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTrainingSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Play moves to generate lines"
+                android:textColor="@color/textSecondary"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnViewFile"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="View Repertoire File"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_visibility"
+            app:tint="@color/primaryOrange" />
+
+        <ImageButton
+            android:id="@+id/btnSwitchRepertoire"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Switch Repertoire"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_book"
+            app:tint="@color/textSecondary" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Status Banner -->
+            <LinearLayout
+                android:id="@+id/layoutStatusBanner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bg_rounded_card"
+                android:backgroundTint="@color/customSurfaceElevated"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvStatusBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_pill"
+                        android:backgroundTint="@color/primaryOrangeDark"
+                        android:paddingStart="8dp"
+                        android:paddingTop="3dp"
+                        android:paddingEnd="8dp"
+                        android:paddingBottom="3dp"
+                        android:text="NEW VARIATION"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvTurnIndicator"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:text="White to move"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvMoveCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Move 1"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvStatusDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Play moves for both sides. When your line is done, tap Save Line."
+                    android:textColor="@color/textSecondary"
+                    android:textSize="12sp" />
+
+                <!-- Known Alternative Branches Chips (if any) -->
+                <HorizontalScrollView
+                    android:id="@+id/scrollBranchChips"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:scrollbars="none"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupBranches"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:singleLine="true" />
+                </HorizontalScrollView>
+
+            </LinearLayout>
+
+            <!-- Chess Board -->
+            <com.mhrahmankwoshik.gambitstudio.ui.ChessBoardView
+                android:id="@+id/chessBoardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+            <!-- Move History Row -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvMoveHistory"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_move_history" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Action Toolbar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/customCard"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="12dp">
+
+        <ImageButton
+            android:id="@+id/btnUndo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Undo Move"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_undo"
+            app:tint="@color/white" />
+
+        <ImageButton
+            android:id="@+id/btnFlipBoard"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Flip Board"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_swap"
+            app:tint="@color/white" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnResetLine"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="@color/customSurfaceElevated"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="New Line"
+            android:textColor="@color/textPrimary"
+            android:textSize="12sp"
+            app:cornerRadius="10dp"
+            app:icon="@drawable/ic_new_game"
+            app:iconPadding="4dp"
+            app:iconSize="16dp"
+            app:iconTint="@color/textPrimary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSaveLine"
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/primaryOrange"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="Save Line"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:cornerRadius="10dp"
+            app:icon="@drawable/ic_save"
+            app:iconPadding="6dp"
+            app:iconSize="18dp"
+            app:iconTint="@color/white" />
+
+    </LinearLayout>
+
+</LinearLayout>

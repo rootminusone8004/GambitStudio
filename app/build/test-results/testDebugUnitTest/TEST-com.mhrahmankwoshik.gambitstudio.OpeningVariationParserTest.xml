@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.mhrahmankwoshik.gambitstudio.OpeningVariationParserTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-11T17:24:47" hostname="rootminusone" time="0.5">
+  <properties/>
+  <testcase name="testTennisonGambitVariations" classname="com.mhrahmankwoshik.gambitstudio.OpeningVariationParserTest" time="0.249"/>
+  <testcase name="testHierarchicalIndentedTreeParsing" classname="com.mhrahmankwoshik.gambitstudio.OpeningVariationParserTest" time="0.106"/>
+  <testcase name="testParseWithZeroZeroCastling" classname="com.mhrahmankwoshik.gambitstudio.OpeningVariationParserTest" time="0.036"/>
+  <testcase name="testParseScotchGambitVariations" classname="com.mhrahmankwoshik.gambitstudio.OpeningVariationParserTest" time="0.034"/>
+  <testcase name="testIllegalMoveReportsErrorCleanly" classname="com.mhrahmankwoshik.gambitstudio.OpeningVariationParserTest" time="0.044"/>
+  <testcase name="testParseWithCommentsAndBlankLines" classname="com.mhrahmankwoshik.gambitstudio.OpeningVariationParserTest" time="0.025"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
