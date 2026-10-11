@@ -19,22 +19,36 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <TextView
+            <ImageView
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_marginEnd="10dp"
+                android:contentDescription="GambitStudio"
+                android:src="@drawable/ic_gambit_logo" />
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="GambitStudio"
-                android:textColor="@color/primaryOrange"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Opening &amp; Variation Trainer"
-                android:textColor="@color/textSecondary"
-                android:textSize="11sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GambitStudio"
+                    android:textColor="@color/primaryOrange"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Opening &amp; Variation Trainer"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="11sp" />
+            </LinearLayout>
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -160,11 +174,10 @@
             tools:visibility="visible">
 
             <ImageView
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:contentDescription="Empty"
-                android:src="@drawable/ic_school"
-                app:tint="@color/primaryOrangeLight" />
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:contentDescription="GambitStudio"
+                android:src="@drawable/ic_gambit_logo" />
 
             <TextView
                 android:layout_width="wrap_content"
