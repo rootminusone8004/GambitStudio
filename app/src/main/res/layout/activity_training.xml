@@ -222,6 +222,18 @@
             app:tint="@color/white" />
 
         <ImageButton
+            android:id="@+id/btnAutoPlay"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Toggle Auto-Play"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_play_arrow"
+            app:tint="@color/primaryOrange" />
+
+        <ImageButton
             android:id="@+id/btnFlipBoard"
             android:layout_width="40dp"
             android:layout_height="40dp"

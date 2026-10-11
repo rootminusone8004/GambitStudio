@@ -37,8 +37,8 @@ class ChessGame(
         for (uci in initialMovesUci) {
             val legalMoves = getLegalMoves()
             val move = legalMoves.find { it.uci == uci || it.uci.startsWith(uci.take(4)) } ?: break
-            boardHistory.add(board.copy())
             board.applyMove(move)
+            boardHistory.add(board.copy())
             moveHistory.add(move)
             lastMove = move
             status = MoveGenerator.getGameStatus(board)
@@ -64,10 +64,8 @@ class ChessGame(
             it.from == move.from && it.to == move.to && (move.promotion == null || it.promotion == move.promotion)
         } ?: return false
 
-        // Save snapshot before move
-        boardHistory.add(board.copy())
-
         board.applyMove(matchingMove)
+        boardHistory.add(board.copy())
         moveHistory.add(matchingMove)
         lastMove = matchingMove
 
@@ -82,8 +80,8 @@ class ChessGame(
         val legalMoves = getLegalMoves()
         val matchingMove = legalMoves.find { it.uci == uci || it.uci.startsWith(uci.take(4)) } ?: return null
 
-        boardHistory.add(board.copy())
         board.applyMove(matchingMove)
+        boardHistory.add(board.copy())
         moveHistory.add(matchingMove)
         lastMove = matchingMove
 
@@ -91,24 +89,18 @@ class ChessGame(
         return matchingMove
     }
 
-    fun undoMove(): Boolean {
+    fun undoSingleMove(): Boolean {
         if (moveHistory.isEmpty() || boardHistory.size < 2) return false
-
-        // If it's currently the player's turn, we undo both engine move and player move (2 steps)
-        // If it's engine's turn (engine hadn't moved yet), we undo 1 step
-        val stepsToRevert = if (isPlayerTurn() && moveHistory.size >= 2) 2 else 1
-
-        for (i in 0 until stepsToRevert) {
-            if (moveHistory.isNotEmpty() && boardHistory.size > 1) {
-                moveHistory.removeAt(moveHistory.lastIndex)
-                boardHistory.removeAt(boardHistory.lastIndex)
-            }
-        }
-
+        moveHistory.removeAt(moveHistory.lastIndex)
+        boardHistory.removeAt(boardHistory.lastIndex)
         board = boardHistory.last().copy()
         lastMove = moveHistory.lastOrNull()
         status = MoveGenerator.getGameStatus(board)
         return true
+    }
+
+    fun undoMove(): Boolean {
+        return undoSingleMove()
     }
 
     fun resign() {

@@ -46,6 +46,8 @@ class TrainingActivity : AppCompatActivity() {
 
     private val chessGame = ChessGame(playerColor = PieceColor.WHITE)
     private var lastMoveWasAutoPlay = false
+    private var isAutoPlaySuspendedAfterUndo = false
+    private var autoPlayEnabled = true
     private var autoPlayJob: Job? = null
     private var pendingPromotion: Pair<Square, Square>? = null
 
@@ -136,6 +138,19 @@ class TrainingActivity : AppCompatActivity() {
             undoMove()
         }
 
+        binding.btnAutoPlay.setOnClickListener {
+            autoPlayEnabled = !autoPlayEnabled
+            if (autoPlayEnabled) {
+                isAutoPlaySuspendedAfterUndo = false
+                Toast.makeText(this, "Auto-play enabled", Toast.LENGTH_SHORT).show()
+            } else {
+                autoPlayJob?.cancel()
+                Toast.makeText(this, "Auto-play paused (manual mode)", Toast.LENGTH_SHORT).show()
+            }
+            updateAutoPlayButtonState()
+            updateStatusAndCheckAutoplay()
+        }
+
         binding.btnFlipBoard.setOnClickListener {
             binding.chessBoardView.isFlipped = !binding.chessBoardView.isFlipped
             binding.chessBoardView.invalidate()
@@ -147,6 +162,18 @@ class TrainingActivity : AppCompatActivity() {
 
         binding.btnSaveLine.setOnClickListener {
             saveCurrentLine()
+        }
+
+        updateAutoPlayButtonState()
+    }
+
+    private fun updateAutoPlayButtonState() {
+        if (autoPlayEnabled) {
+            binding.btnAutoPlay.imageTintList = ContextCompat.getColorStateList(this, R.color.primaryOrange)
+            binding.btnAutoPlay.contentDescription = "Auto-play: ON (Tap to pause)"
+        } else {
+            binding.btnAutoPlay.imageTintList = ContextCompat.getColorStateList(this, R.color.textSecondary)
+            binding.btnAutoPlay.contentDescription = "Auto-play: OFF (Tap to enable)"
         }
     }
 
@@ -172,6 +199,7 @@ class TrainingActivity : AppCompatActivity() {
         autoPlayJob?.cancel()
         chessGame.resetGame(newPlayerColor = PieceColor.WHITE)
         lastMoveWasAutoPlay = false
+        isAutoPlaySuspendedAfterUndo = false
         pendingPromotion = null
 
         updateBoardView()
@@ -215,6 +243,7 @@ class TrainingActivity : AppCompatActivity() {
     }
 
     private fun onMoveExecuted(move: Move) {
+        isAutoPlaySuspendedAfterUndo = false
         if (move.capturedPiece != null) {
             SoundPlayer.playCapture()
         } else {
@@ -251,6 +280,7 @@ class TrainingActivity : AppCompatActivity() {
         val matchingPaths = knownUciPaths.filter { path ->
             path.size > currentPly && path.take(currentPly) == historyUci
         }
+        val isExactEndOfKnownPath = knownUciPaths.any { it == historyUci && it.isNotEmpty() }
 
         // Available candidate moves at this position
         val candidateMovesUci = matchingPaths.map { it[currentPly] }.distinct()
@@ -265,14 +295,18 @@ class TrainingActivity : AppCompatActivity() {
             binding.tvTurnIndicator.text = "$activeColorName to move (Opponent side)"
         }
 
-        // Branch chips setup
+        // Branch chips setup: display recorded continuations if any exist
         updateBranchChips(candidateMovesUci)
 
         if (matchingPaths.isNotEmpty()) {
-            binding.tvStatusBadge.text = "IN FILE"
-            binding.tvStatusBadge.backgroundTintList = ContextCompat.getColorStateList(this, R.color.status_green)
-
-            if (isTargetColorTurn) {
+            if (isAutoPlaySuspendedAfterUndo) {
+                // User just stepped back to explore an alternative or create a branch!
+                binding.tvStatusBadge.text = "BRANCH POINT"
+                binding.tvStatusBadge.backgroundTintList = ContextCompat.getColorStateList(this, R.color.status_amber)
+                binding.tvStatusDescription.text = "At variation point (${matchingPaths.size} line(s) in file). Play a new move to branch, or tap a chip."
+            } else if (isTargetColorTurn && autoPlayEnabled) {
+                binding.tvStatusBadge.text = "IN FILE"
+                binding.tvStatusBadge.backgroundTintList = ContextCompat.getColorStateList(this, R.color.status_green)
                 binding.tvStatusDescription.text = "Recorded reply found. Auto-playing response…"
 
                 autoPlayJob?.cancel()
@@ -286,18 +320,24 @@ class TrainingActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                binding.tvStatusDescription.text = "Playing moves from recorded file (${matchingPaths.size} line(s))."
+                binding.tvStatusBadge.text = "IN FILE"
+                binding.tvStatusBadge.backgroundTintList = ContextCompat.getColorStateList(this, R.color.status_green)
+                binding.tvStatusDescription.text = "Recorded moves available (${matchingPaths.size} line(s)). Play next move or tap a chip."
             }
+        } else if (isExactEndOfKnownPath) {
+            binding.tvStatusBadge.text = "LINE COMPLETE"
+            binding.tvStatusBadge.backgroundTintList = ContextCompat.getColorStateList(this, R.color.status_green)
+            binding.tvStatusDescription.text = "Line complete in file. Tap Undo to branch from an earlier move, or New Line to start over."
         } else {
             binding.tvStatusBadge.text = "NEW LINE"
             binding.tvStatusBadge.backgroundTintList = ContextCompat.getColorStateList(this, R.color.primaryOrangeDark)
-            binding.tvStatusDescription.text = "New variation: play both sides to record, then tap Save Line."
+            binding.tvStatusDescription.text = "Recording new line: play moves on the board, then tap Save Line."
         }
     }
 
     private fun updateBranchChips(candidateMovesUci: List<String>) {
         binding.chipGroupBranches.removeAllViews()
-        if (candidateMovesUci.size > 1) {
+        if (candidateMovesUci.isNotEmpty()) {
             binding.scrollBranchChips.visibility = View.VISIBLE
             for (uci in candidateMovesUci) {
                 val legalMove = chessGame.getLegalMoves().find { it.uci == uci }
@@ -307,6 +347,7 @@ class TrainingActivity : AppCompatActivity() {
                     isClickable = true
                     setOnClickListener {
                         autoPlayJob?.cancel()
+                        isAutoPlaySuspendedAfterUndo = false
                         val executed = chessGame.makeEngineMove(uci)
                         if (executed != null) {
                             lastMoveWasAutoPlay = true
@@ -325,14 +366,11 @@ class TrainingActivity : AppCompatActivity() {
         autoPlayJob?.cancel()
         if (chessGame.getMoveRecords().isEmpty()) return
 
-        val wasAuto = lastMoveWasAutoPlay
-        chessGame.undoMove()
-
-        // If the last move was an auto-play response from file, undo user move before it too
-        if (wasAuto && chessGame.getMoveRecords().isNotEmpty()) {
-            chessGame.undoMove()
-        }
+        // Undo exactly one half-move
+        chessGame.undoSingleMove()
         lastMoveWasAutoPlay = false
+        // Suspend automatic forward playback so user can freely make an alternative move
+        isAutoPlaySuspendedAfterUndo = true
         SoundPlayer.playMove()
 
         updateBoardView()
@@ -395,6 +433,8 @@ class TrainingActivity : AppCompatActivity() {
             "Saved! Line added to ${updatedOpening.name} ($linesCount variation lines total)",
             Toast.LENGTH_LONG
         ).show()
+
+        isAutoPlaySuspendedAfterUndo = false
 
         updateStatusAndCheckAutoplay()
     }
