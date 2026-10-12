@@ -53,6 +53,7 @@ def main():
         github_ref = os.environ.get("GITHUB_REF", "")
         if github_ref.startswith("refs/tags/v"):
             tag = github_ref.replace("refs/tags/", "")
+            version = tag.lstrip("v")
         else:
             tag = f"v{version}"
 
