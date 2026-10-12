@@ -26,8 +26,24 @@ android {
         viewBinding true
     }
 
+    signingConfigs {
+        release {
+            if (file('release.jks').exists()) {
+                storeFile file('release.jks')
+                storePassword System.getenv("KEYSTORE_PASSWORD") ?: System.getenv("RELEASE_KEYSTORE_PASSWORD") ?: 'gambitstudio'
+                keyAlias System.getenv("KEY_ALIAS") ?: System.getenv("RELEASE_KEY_ALIAS") ?: 'gambitstudio'
+                keyPassword System.getenv("KEY_PASSWORD") ?: System.getenv("RELEASE_KEY_PASSWORD") ?: 'gambitstudio'
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (file('release.jks').exists()) {
+                signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

@@ -27,7 +27,7 @@
     <color name="lichess_selected_square">#78B83D</color>
     <color name="lichess_selected_square_light">#8CC64B</color>
     <color name="lichess_selected_square_dark">#6DA937</color>
-    <color name="lichess_check_square">#E53935</color>
+    <color name="lichess_check_square">#8E24AA</color>
     <color name="lichess_legal_move_dot">#66000000</color>
     <color name="lichess_coordinate_light">#BD5E38</color>
     <color name="lichess_coordinate_dark">#F6E1CE</color>

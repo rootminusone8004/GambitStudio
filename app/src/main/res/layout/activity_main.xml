@@ -15,41 +15,14 @@
         android:paddingStart="16dp"
         android:paddingEnd="12dp">
 
-        <LinearLayout
+        <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:layout_marginEnd="10dp"
-                android:contentDescription="GambitStudio"
-                android:src="@drawable/ic_gambit_logo" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="GambitStudio"
-                    android:textColor="@color/primaryOrange"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Opening &amp; Variation Trainer"
-                    android:textColor="@color/textSecondary"
-                    android:textSize="11sp" />
-            </LinearLayout>
-        </LinearLayout>
+            android:text="GambitStudio"
+            android:textColor="@color/primaryOrange"
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnImportOpening"
@@ -60,7 +33,7 @@
             android:backgroundTint="@color/customSurfaceElevated"
             android:paddingStart="10dp"
             android:paddingEnd="12dp"
-            android:text="Import .txt"
+            android:text="Import"
             android:textColor="@color/textPrimary"
             android:textSize="12sp"
             app:cornerRadius="18dp"

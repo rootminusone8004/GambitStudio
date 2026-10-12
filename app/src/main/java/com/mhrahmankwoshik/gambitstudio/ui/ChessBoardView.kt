@@ -105,7 +105,7 @@ class ChessBoardView @JvmOverloads constructor(
     }
     private val checkSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.lichess_check_square)
-        alpha = 210
+        alpha = 230
     }
     private val legalMoveDotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.lichess_legal_move_dot)
