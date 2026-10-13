@@ -2,8 +2,11 @@
 <resources>
     <string name="app_name">GambitStudio</string>
 
+    <string name="action_cancel">Cancel</string>
+
     <!-- Pawn Promotion Dialog -->
     <string name="promotion_title">Promote Pawn</string>
+    <string name="promotion_subtitle">Select a piece to promote your pawn</string>
     <string name="piece_queen">Queen</string>
     <string name="piece_rook">Rook</string>
     <string name="piece_bishop">Bishop</string>

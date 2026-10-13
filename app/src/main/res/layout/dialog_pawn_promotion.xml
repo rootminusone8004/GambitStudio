@@ -3,11 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_rounded_card"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="20dp">
 
     <TextView
+        android:id="@+id/tvPromotionTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/promotion_title"
@@ -15,53 +16,193 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
+    <TextView
+        android:id="@+id/tvPromotionSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/promotion_subtitle"
+        android:textColor="@color/textSecondary"
+        android:textSize="13sp" />
+
+    <!-- 2x2 Grid Layout: Guarantees Queen, Knight, Rook, and Bishop are 100% visible on any screen -->
+    <!-- Row 1: Queen & Knight (Primary choices) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:baselineAligned="false"
         android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/btnPromoteQueen"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_margin="6dp"
-            android:background="@drawable/bg_circle_icon"
-            android:contentDescription="@string/piece_queen"
-            android:padding="8dp"
-            android:scaleType="fitCenter" />
+        <!-- Queen -->
+        <LinearLayout
+            android:id="@+id/containerPromoteQueen"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_rounded_card"
+            android:backgroundTint="@color/customSurfaceDarker"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="12dp">
 
-        <ImageButton
-            android:id="@+id/btnPromoteRook"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_margin="6dp"
-            android:background="@drawable/bg_circle_icon"
-            android:contentDescription="@string/piece_rook"
-            android:padding="8dp"
-            android:scaleType="fitCenter" />
+            <ImageButton
+                android:id="@+id/btnPromoteQueen"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_circle_icon"
+                android:clickable="false"
+                android:contentDescription="@string/piece_queen"
+                android:focusable="false"
+                android:padding="6dp"
+                android:scaleType="fitCenter" />
 
-        <ImageButton
-            android:id="@+id/btnPromoteBishop"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_margin="6dp"
-            android:background="@drawable/bg_circle_icon"
-            android:contentDescription="@string/piece_bishop"
-            android:padding="8dp"
-            android:scaleType="fitCenter" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/piece_queen"
+                android:textColor="@color/textPrimary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/btnPromoteKnight"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_margin="6dp"
-            android:background="@drawable/bg_circle_icon"
-            android:contentDescription="@string/piece_knight"
-            android:padding="8dp"
-            android:scaleType="fitCenter" />
+        <!-- Knight -->
+        <LinearLayout
+            android:id="@+id/containerPromoteKnight"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_rounded_card"
+            android:backgroundTint="@color/customSurfaceDarker"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <ImageButton
+                android:id="@+id/btnPromoteKnight"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_circle_icon"
+                android:clickable="false"
+                android:contentDescription="@string/piece_knight"
+                android:focusable="false"
+                android:padding="6dp"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/piece_knight"
+                android:textColor="@color/textPrimary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
     </LinearLayout>
+
+    <!-- Row 2: Rook & Bishop (Underpromotion choices) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <!-- Rook -->
+        <LinearLayout
+            android:id="@+id/containerPromoteRook"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_rounded_card"
+            android:backgroundTint="@color/customSurfaceDarker"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <ImageButton
+                android:id="@+id/btnPromoteRook"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_circle_icon"
+                android:clickable="false"
+                android:contentDescription="@string/piece_rook"
+                android:focusable="false"
+                android:padding="6dp"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/piece_rook"
+                android:textColor="@color/textPrimary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Bishop -->
+        <LinearLayout
+            android:id="@+id/containerPromoteBishop"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_rounded_card"
+            android:backgroundTint="@color/customSurfaceDarker"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <ImageButton
+                android:id="@+id/btnPromoteBishop"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_circle_icon"
+                android:clickable="false"
+                android:contentDescription="@string/piece_bishop"
+                android:focusable="false"
+                android:padding="6dp"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/piece_bishop"
+                android:textColor="@color/textPrimary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Cancel Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCancelPromotion"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="@string/action_cancel"
+        android:textColor="@color/textSecondary"
+        android:textSize="14sp" />
 
 </LinearLayout>
