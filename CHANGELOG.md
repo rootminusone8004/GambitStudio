@@ -2,6 +2,11 @@
 
 All notable changes to the **GambitStudio** project will be documented in this file.
 
+## [1.0.1] - 2026-10-14
+### Fixed
+- **Pawn promtion board**:
+  - Every piece now is shown.
+
 ## [1.0.0] - 2026-10-12
 
 ### Added
