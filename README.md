@@ -147,3 +147,10 @@ GambitStudio uses **Tag-Driven Automated Semantic Versioning** (Option C):
 - Every pushed Git tag (e.g., `git tag v1.0.1 && git push origin v1.0.1`) triggers `.github/workflows/release.yml`.
 - The workflow automatically calculates `versionCode = (major * 10000) + (minor * 100) + patch` and applies it to the build.
 - The pipeline runs unit tests, builds the signed release APK, and attaches it directly to a new GitHub Release.
+
+---
+
+## ⚖️ License
+
+MIT License. See [LICENSE](LICENSE.txt) for details.
+

@@ -7,6 +7,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -15,10 +16,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mhrahmankwoshik.gambitstudio.data.OpeningDatabase
 import com.mhrahmankwoshik.gambitstudio.data.OpeningFileManager
 import com.mhrahmankwoshik.gambitstudio.data.OpeningVariationParser
+import com.mhrahmankwoshik.gambitstudio.data.ParseResult
 import com.mhrahmankwoshik.gambitstudio.data.model.Opening
 import com.mhrahmankwoshik.gambitstudio.data.model.PieceColor
 import com.mhrahmankwoshik.gambitstudio.databinding.ActivityMainBinding
 import com.mhrahmankwoshik.gambitstudio.databinding.DialogCreateRepertoireBinding
+import com.mhrahmankwoshik.gambitstudio.databinding.DialogImportOpeningBinding
 import com.mhrahmankwoshik.gambitstudio.databinding.DialogTrainingFileViewBinding
 
 class MainActivity : AppCompatActivity() {
@@ -153,6 +156,13 @@ class MainActivity : AppCompatActivity() {
         val dialogBinding = DialogCreateRepertoireBinding.inflate(layoutInflater)
         dialog.setContentView(dialogBinding.root)
 
+        dialog.window?.apply {
+            setBackgroundDrawableResource(android.R.color.transparent)
+            val dm = resources.displayMetrics
+            val targetWidth = (dm.widthPixels * 0.90).toInt().coerceAtMost((420 * dm.density).toInt())
+            setLayout(targetWidth, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
+
         dialogBinding.chipGroupSide.setOnCheckedStateChangeListener { _, checkedIds ->
             if (checkedIds.contains(dialogBinding.chipSideWhite.id)) {
                 dialogBinding.tvSideExplanation.text =
@@ -206,6 +216,13 @@ class MainActivity : AppCompatActivity() {
         val dialog = Dialog(this)
         val dialogBinding = DialogTrainingFileViewBinding.inflate(layoutInflater)
         dialog.setContentView(dialogBinding.root)
+
+        dialog.window?.apply {
+            setBackgroundDrawableResource(android.R.color.transparent)
+            val dm = resources.displayMetrics
+            val targetWidth = (dm.widthPixels * 0.90).toInt().coerceAtMost((420 * dm.density).toInt())
+            setLayout(targetWidth, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
 
         dialogBinding.tvFileName.text = "${opening.id}.txt"
         dialogBinding.tvFileSummary.text = "${opening.name} • $leafCount variation line(s)"
@@ -263,18 +280,83 @@ class MainActivity : AppCompatActivity() {
                 .split(" ")
                 .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
 
-            val id = cleanName.lowercase().replace("'", "").replace(Regex("[^a-z0-9]+"), "_").trim('_')
-
             val parseResult = OpeningVariationParser.parseFileContent(content)
-            val baseLine = parseResult.paths.firstOrNull { it.isBaseLine } ?: parseResult.paths.firstOrNull()
+            val leafCount = OpeningVariationParser.getLeafVariationPaths(parseResult).size
 
+            showImportOpeningDialog(cleanName, rawFileName, content, parseResult, leafCount)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Import failed: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showImportOpeningDialog(
+        defaultName: String,
+        rawFileName: String,
+        content: String,
+        parseResult: ParseResult,
+        variationCount: Int
+    ) {
+        val dialog = Dialog(this)
+        val dialogBinding = DialogImportOpeningBinding.inflate(layoutInflater)
+        dialog.setContentView(dialogBinding.root)
+
+        dialog.window?.apply {
+            setBackgroundDrawableResource(android.R.color.transparent)
+            val dm = resources.displayMetrics
+            val targetWidth = (dm.widthPixels * 0.90).toInt().coerceAtMost((420 * dm.density).toInt())
+            setLayout(targetWidth, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
+
+        dialogBinding.tvImportFileName.text = rawFileName
+        val countText = if (variationCount == 1 && parseResult.paths.firstOrNull()?.movesSan?.isEmpty() == true) {
+            "0 variation lines"
+        } else {
+            "$variationCount variation line(s)"
+        }
+        dialogBinding.tvImportFileSummary.text = "$countText detected"
+        dialogBinding.etImportOpeningName.setText(defaultName)
+
+        val suggestBlack = rawFileName.contains("black", ignoreCase = true) ||
+                defaultName.contains("black", ignoreCase = true)
+        if (suggestBlack) {
+            dialogBinding.chipSideBlack.isChecked = true
+            dialogBinding.tvSideExplanation.text =
+                "Black opening. When practicing, the app auto-plays Black's recorded moves. You play White's moves (and both sides for new lines)."
+        } else {
+            dialogBinding.chipSideWhite.isChecked = true
+            dialogBinding.tvSideExplanation.text =
+                "White opening. When practicing, the app auto-plays White's recorded moves. You play Black's moves (and both sides for new lines)."
+        }
+
+        dialogBinding.chipGroupSide.setOnCheckedStateChangeListener { _, checkedIds ->
+            if (checkedIds.contains(dialogBinding.chipSideWhite.id)) {
+                dialogBinding.tvSideExplanation.text =
+                    "White opening. When practicing, the app auto-plays White's recorded moves. You play Black's moves (and both sides for new lines)."
+            } else {
+                dialogBinding.tvSideExplanation.text =
+                    "Black opening. When practicing, the app auto-plays Black's recorded moves. You play White's moves (and both sides for new lines)."
+            }
+        }
+
+        dialogBinding.btnConfirmImport.setOnClickListener {
+            val name = dialogBinding.etImportOpeningName.text?.toString()?.trim()
+            if (name.isNullOrEmpty()) {
+                dialogBinding.tilImportOpeningName.error = "Please enter an opening name"
+                return@setOnClickListener
+            }
+
+            val isWhite = dialogBinding.chipSideWhite.isChecked
+            val targetColor = if (isWhite) PieceColor.WHITE else PieceColor.BLACK
+            val id = name.lowercase().replace("'", "").replace(Regex("[^a-z0-9]+"), "_").trim('_')
+
+            val baseLine = parseResult.paths.firstOrNull { it.isBaseLine } ?: parseResult.paths.firstOrNull()
             val baseUci = baseLine?.movesUci ?: emptyList()
             val baseSan = if (baseLine != null) OpeningVariationParser.formatSanMoves(baseLine.movesSan) else ""
 
             val newOpening = Opening(
                 id = id,
-                name = cleanName,
-                targetColor = PieceColor.WHITE,
+                name = name,
+                targetColor = targetColor,
                 movesUci = baseUci,
                 movesSan = baseSan,
                 description = "Imported opening file"
@@ -282,10 +364,16 @@ class MainActivity : AppCompatActivity() {
 
             OpeningDatabase.saveOpening(this, newOpening, content)
             refreshList()
+            dialog.dismiss()
 
-            Toast.makeText(this, "Imported $cleanName successfully!", Toast.LENGTH_LONG).show()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Import failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            val sideName = if (isWhite) "White" else "Black"
+            Toast.makeText(this, "Imported $name ($sideName) successfully!", Toast.LENGTH_LONG).show()
         }
+
+        dialogBinding.btnCancelImport.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }

@@ -2,10 +2,12 @@
 
 All notable changes to the **GambitStudio** project will be documented in this file.
 
-## [1.0.1] - 2026-10-14
-### Fixed
-- **Pawn promtion board**:
-  - Every piece now is shown.
+## [1.1.0] - 2026-10-16
+### Added
+- **Asking Side Prompt**:
+  - A prompt will appear when a opening list is imported.
+- **LICENSE**:
+  - MIT License has been chosen for the project.
 
 ## [1.0.0] - 2026-10-12
 
