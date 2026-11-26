@@ -128,7 +128,7 @@ object OpeningVariationParser {
                 }
 
                 // Determine parent node and starting position
-                val isExplicitFromStart = isMoveFromStart(tokens)
+                val isExplicitFromStart = isMoveFromStart(trimmed)
                 val (startBoard, baseUci, baseSan) = if (isExplicitFromStart) {
                     Triple(ChessBoard(), emptyList<String>(), emptyList<String>())
                 } else if (indent > stack.last().indent) {
@@ -228,11 +228,13 @@ object OpeningVariationParser {
         return moveTokens
     }
 
-    private fun isMoveFromStart(tokens: List<String>): Boolean {
-        if (tokens.isEmpty()) return false
-        val first = tokens.first()
-        return first.startsWith("1.") || first.startsWith("1...")
-    }
+    /**
+     * A line beginning with White's first move number ("1. e4", "1.e4") restarts from the
+     * initial position instead of continuing the line above. Checked on the raw line because
+     * the tokenizer strips move numbers. "1..." (Black's first move) still continues a line.
+     */
+    private fun isMoveFromStart(line: String): Boolean =
+        Regex("^1\\.(?!\\.)").containsMatchIn(line.trim())
 
     private data class LineParseOutcome(
         val uciMoves: List<String>,
@@ -447,34 +449,49 @@ object OpeningVariationParser {
      */
     fun getLeafVariationPaths(parseResult: ParseResult): List<VariationPath> {
         val nonBase = parseResult.paths.filter { !it.isBaseLine }
-        return if (nonBase.isNotEmpty()) nonBase else parseResult.paths
+        if (nonBase.isEmpty()) return parseResult.paths
+        // Keep the base line when no other line extends it (e.g. a second line starting with
+        // a different first move), so it is not dropped when the file is re-serialized.
+        val unextendedBase = parseResult.paths.filter { base ->
+            base.isBaseLine && nonBase.none { path ->
+                path.movesUci.size >= base.movesUci.size &&
+                        path.movesUci.take(base.movesUci.size) == base.movesUci
+            }
+        }
+        return unextendedBase + nonBase
     }
 
     /**
      * Merges a newly played move line (list of SAN strings) into existing file content,
      * maintaining clean indentation and branching without repeating prefix moves.
      */
-    fun mergeNewVariation(existingContent: String, newLineSan: List<String>): String {
-        val cleanLine = newLineSan.map { it.trim() }.filter { it.isNotBlank() }
-        if (cleanLine.isEmpty()) return existingContent
+    fun mergeNewVariation(existingContent: String, newLineSan: List<String>): String =
+        mergeNewVariations(existingContent, listOf(newLineSan))
+
+    /**
+     * Merges several new move lines (SAN, from the start position) into existing file content
+     * in one pass, parsing and serializing the file only once.
+     */
+    fun mergeNewVariations(existingContent: String, newLinesSan: List<List<String>>): String {
+        val cleanLines = newLinesSan
+            .map { line -> line.map { it.trim() }.filter { it.isNotBlank() } }
+            .filter { it.isNotEmpty() }
+        if (cleanLines.isEmpty()) return existingContent
 
         val existingResult = parseFileContent(existingContent)
-        val existingLeafPaths = getLeafVariationPaths(existingResult).map { it.movesSan }
+        var paths = getLeafVariationPaths(existingResult).map { it.movesSan }
 
-        val alreadyPresent = existingLeafPaths.any { path ->
-            path == cleanLine || (path.size >= cleanLine.size && path.take(cleanLine.size) == cleanLine)
-        }
-
-        val updatedPaths = if (alreadyPresent) {
-            existingLeafPaths
-        } else {
-            val filtered = existingLeafPaths.filterNot { existingPath ->
-                cleanLine.size > existingPath.size && cleanLine.take(existingPath.size) == existingPath
+        for (cleanLine in cleanLines) {
+            val alreadyPresent = paths.any { path ->
+                path.size >= cleanLine.size && path.take(cleanLine.size) == cleanLine
             }
-            filtered + listOf(cleanLine)
+            if (alreadyPresent) continue
+            paths = paths.filterNot { existingPath ->
+                cleanLine.size > existingPath.size && cleanLine.take(existingPath.size) == existingPath
+            } + listOf(cleanLine)
         }
 
-        return serializeMoveTree(updatedPaths)
+        return serializeMoveTree(paths)
     }
 }
 

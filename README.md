@@ -1,156 +1,75 @@
-# GambitStudio 🏰
+# 🏰 GambitStudio
 
-<p align="center">
-  <img src="app/src/main/res/drawable/ic_launcher.png" alt="GambitStudio Icon" width="96" />
-</p>
+![License: MIT](https://img.shields.io/badge/License-MIT-800000.svg)
+&nbsp;&nbsp;
+![release: 1.2.0](https://img.shields.io/badge/release-1.2.0-blue.svg)
 
-<p align="center">
-  <strong>The dedicated opening studio and gambit trainer designed to craft, branch, explore, and export <code>opening.txt</code> files for Chessy.</strong>
-</p>
+<img src="fastlane/metadata/android/en-US/images/icon.png" alt="GambitStudio" width="50">
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Platform-Android%207.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Platform" />
-  <img src="https://img.shields.io/badge/Language-Kotlin%202.0-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white" alt="Kotlin" />
-  <img src="https://img.shields.io/badge/Companion%20App-Chessy-E64A19?style=for-the-badge" alt="Chessy Companion" />
-  <img src="https://img.shields.io/badge/Theme-Vibrant%20Orange-E64A19?style=for-the-badge" alt="Theme" />
-  <img src="https://img.shields.io/badge/Pieces-Lichess%20cburnett-B58863?style=for-the-badge" alt="Lichess Theme" />
-  <img src="https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white" alt="GitHub Actions" />
-</p>
+GambitStudio is a **simple, offline opening studio** for building and training chess openings and gambits.
+It is the companion app for [Chessy](https://github.com/rootminusone8004/Chessy): the opening files it exports power Chessy's opening book.
 
----
+## ♞ What is it?
 
-## 🎯 Purpose & Overview
+GambitStudio is a focused opening workshop designed to be:
 
-**GambitStudio** is the opening preparation workshop and companion app for **Chessy**. Its mission is focused and simple:
-- **Build**: Play through moves and explore opening theories, sharp gambits, and complex lines.
-- **Branch**: Undo moves to create alternate branching variations without losing previously recorded history.
-- **Train**: Rehearse and memorize your opening repertoire with the interactive training engine.
-- **Export & Import**: Generate clean, standardized `opening.txt` files to immediately power the predefined gambit book in Chessy.
+- ✅ Simple — Play the moves on the board and save the line.
+- 📶 Offline — Everything stays on your phone.
+- 🔐 Private — No data collection, no accounts, no syncing.
+- 🎯 Focused — Built solely for preparing opening and gambit lines.
 
----
+With GambitStudio, you can:
 
-## ✨ Features & Highlights
+- ♟️ Record lines by playing moves for both sides on the board.
+- 🌿 Undo any move to branch into a new variation without losing saved lines.
+- 🎓 Train an opening as White or Black, with your recorded replies played automatically.
+- 🧠 Reuse what you already recorded: a known position reached by a different move order (a transposition) is recognised, so you don't have to play the rest of the line again.
+- 📁 Import and export plain-text opening files, ready to load into Chessy.
 
-- 🏰 **Interactive Board & Line Recording**:
-  - Full chess rules with castling, en passant, promotion, and check detection.
-  - Interactive move candidate dots and capture rings.
-  - Real-time Standard Algebraic Notation (SAN) generation.
-- 🌿 **Branching & Multi-Line Exploration**:
-  - Undo any move to branch into alternate continuations.
-  - Save multiple variations under the same opening family.
-- 📁 **`opening.txt` Ecosystem**:
-  - **Export**: One-tap export to formatted `opening.txt` for easy file sharing and Chessy integration.
-  - **Import**: Load existing `opening.txt` files directly into GambitStudio to inspect, edit, or extend.
-- 🎓 **Active Training Mode**:
-  - Practice lines from White or Black perspectives.
-  - Immediate feedback on correct vs. deviation moves.
-- 🎨 **Lichess Visual Theme**:
-  - Classic Lichess brown board (`#F0D9B5` / `#B58863`).
-  - Authentic Colin M.L. Burnett (**cburnett**) vector piece artwork.
-  - Vivid violet check highlight (`#8E24AA`, alpha 230) for high visual clarity on both light and dark squares.
-- 🟧 **Vibrant Orange Branding**:
-  - Clean top app bar with prominent top-left title.
-  - Signature Vibrant Orange (`#E64A19`) theme and custom Rook emblem icon.
-- 🚀 **Automated CI/CD Release Pipeline**:
-  - Tag-driven semantic versioning (`vX.Y.Z` automatically generates `versionCode`).
-  - GitHub Actions runs unit tests, compiles signed release APKs, and publishes releases.
+## 📄 Opening file format
 
----
-
-## 📄 `opening.txt` Format Specification
-
-GambitStudio exports files formatted specifically for seamless parsing by both GambitStudio and Chessy:
+Line 1 holds the base moves. Indented lines branch from the line above without repeating moves, and a line starting with `1.` starts again from the initial position:
 
 ```text
-[Opening Name 1]
-1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5
-
-[Opening Name 2 - Variation]
-1. d4 d5 2. c4 dxc4 3. Nf3 Nf6
+1. e4 e5 2. Nf3 Nc6 3. Bc4
+   Bc5 4. c3 Nf6 5. d4
+   Nf6 4. Ng5 d5
+1. Nf3 Nc6 2. e4 e5 3. Bc4
+   Bc5 4. c3 Nf6 5. d4
+   Nf6 4. Ng5 d5
 ```
 
----
+Files with more than one line starting from move 1 need Chessy 1.3.1 or later.
 
-## 🧱 Project Architecture
+## 📥 Download
 
-```
-GambitStudio/
-├── app/
-│   ├── build.gradle
-│   ├── proguard-rules.pro
-│   └── src/
-│       ├── main/
-│       │   ├── AndroidManifest.xml
-│       │   ├── java/com/mhrahmankwoshik/gambitstudio/
-│       │   │   ├── data/
-│       │   │   │   ├── model/ (Move, Piece, Square, GameState, Opening)
-│       │   │   │   ├── OpeningDatabase.kt
-│       │   │   │   ├── OpeningFileManager.kt
-│       │   │   │   └── OpeningVariationParser.kt
-│       │   │   ├── game/
-│       │   │   │   ├── ChessBoard.kt
-│       │   │   │   ├── ChessGame.kt
-│       │   │   │   ├── FenUtil.kt
-│       │   │   │   └── MoveGenerator.kt
-│       │   │   ├── ui/
-│       │   │   │   ├── ChessBoardView.kt
-│       │   │   │   ├── MainActivity.kt
-│       │   │   │   ├── TrainingActivity.kt
-│       │   │   │   ├── MoveHistoryAdapter.kt
-│       │   │   │   ├── OpeningsAdapter.kt
-│       │   │   │   └── dialog/PawnPromotionDialog.kt
-│       │   │   └── util/SoundPlayer.kt
-│       │   └── res/ (drawable, layout, values, mipmap)
-│       └── test/ (Unit tests for game rules, FEN, SAN, and line parsing)
-├── .github/
-│   ├── workflows/release.yml
-│   └── scripts/
-│       ├── generate_release_notes.py
-│       └── generate_summary.py
-├── CHANGELOG.md
-└── README.md
-```
+Download the latest APK from the [Releases](https://github.com/rootminusone8004/GambitStudio/releases/).
 
----
+## 🧰 Build the app from Source
 
-## 🛠️ Building & Developing
+Want to build GambitStudio yourself? See the [BUILD_INFO.md](BUILD_INFO.md) file for full instructions.
 
-### Prerequisites
-- Android Studio Ladybug / Koala or newer
-- JDK 17 (Eclipse Temurin recommended)
-- Android SDK 34 (compileSdk / targetSdk)
-- Min SDK: 24 (Android 7.0 Nougat)
+## 📖 How to Use
 
-### Build Commands
-```bash
-# Clone the repository
-git clone https://github.com/<your-username>/GambitStudio.git
-cd GambitStudio
+New to GambitStudio? Check out the [USAGE.md](USAGE.md) file for a quick guide.
 
-# Run all unit tests
-./gradlew testDebugUnitTest
+## 🤝 Contribute
 
-# Build debug APK
-./gradlew assembleDebug
+We welcome your contributions! You can:
 
-# Build optimized release APK
-./gradlew assembleRelease
-```
-The output APK will be placed in `app/build/outputs/apk/release/app-release.apk`.
+- ✨ Add features or fix bugs via a <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request" target="_blank">pull request</a>.
+- ♟️ Share opening and gambit files.
+- 💡 Suggest ideas or improvements.
 
----
+## 🔒 Security
 
-## 🚀 Automated CI/CD & Versioning
-
-GambitStudio uses **Tag-Driven Automated Semantic Versioning** (Option C):
-
-- Every pushed Git tag (e.g., `git tag v1.0.1 && git push origin v1.0.1`) triggers `.github/workflows/release.yml`.
-- The workflow automatically calculates `versionCode = (major * 10000) + (minor * 100) + patch` and applies it to the build.
-- The pipeline runs unit tests, builds the signed release APK, and attaches it directly to a new GitHub Release.
-
----
+If you find a security vulnerability or have a security concern, please see our [SECURITY.md](SECURITY.md) for guidance on how to report it responsibly.
 
 ## ⚖️ License
 
-MIT License. See [LICENSE](LICENSE.txt) for details.
+GambitStudio - simple offline opening studio and gambit trainer<br>
+Copyright (c) 2026-present Md. Hashibur Rahman Kwoshik
 
+This program is free software, released under the MIT License. You may use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of it, provided the copyright notice and permission notice are included.
+
+This program is provided "as is", without warranty of any kind. See the [LICENSE](LICENSE.txt) file for the full text.

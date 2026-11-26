@@ -2,6 +2,21 @@
 
 All notable changes to the **GambitStudio** project will be documented in this file.
 
+## [1.2.0] - 2026-11-27
+### Added
+- **Position memory (transpositions)**:
+  - Training now remembers every board position in the opening file. When a recorded position is reached by a different move order, it is recognised instead of being treated as a new line.
+  - A new **TRANSPOSITION** status badge shows when this happens. The recorded replies appear as move chips and auto-play continues from them, so the rest of the line does not need to be played again.
+  - **Save Line** at a transposition also writes every recorded continuation from that position under the new move order, so exported files contain the full lines for Chessy.
+
+### Fixed
+- **Opening files with several starting lines**:
+  - Opening files can now hold more than one line starting from move 1 (e.g. `1. e4 e5 2. Nf3 Nc6` and `1. Nf3 Nc6 2. e4 e5`). Previously every extra line starting with `1.` was read as a continuation of the first line, rejected as illegal, and ignored.
+  - Saving a line no longer risks dropping the first line of the file when another line starts with a different first move.
+
+### Notes
+- Files that contain several lines starting from move 1 need **Chessy 1.3.1** or later to load in full.
+
 ## [1.1.0] - 2026-10-16
 ### Added
 - **Asking Side Prompt**:

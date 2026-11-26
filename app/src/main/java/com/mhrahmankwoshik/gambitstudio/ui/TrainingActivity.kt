@@ -20,6 +20,7 @@ import com.mhrahmankwoshik.gambitstudio.R
 import com.mhrahmankwoshik.gambitstudio.data.OpeningDatabase
 import com.mhrahmankwoshik.gambitstudio.data.OpeningFileManager
 import com.mhrahmankwoshik.gambitstudio.data.OpeningVariationParser
+import com.mhrahmankwoshik.gambitstudio.data.PositionIndex
 import com.mhrahmankwoshik.gambitstudio.data.model.Move
 import com.mhrahmankwoshik.gambitstudio.data.model.Opening
 import com.mhrahmankwoshik.gambitstudio.data.model.PieceColor
@@ -43,6 +44,7 @@ class TrainingActivity : AppCompatActivity() {
 
     private var currentOpening: Opening? = null
     private var knownUciPaths = mutableListOf<List<String>>()
+    private var positionIndex = PositionIndex.EMPTY
 
     private val chessGame = ChessGame(playerColor = PieceColor.WHITE)
     private var lastMoveWasAutoPlay = false
@@ -186,6 +188,7 @@ class TrainingActivity : AppCompatActivity() {
         val colorName = if (opening.targetColor == PieceColor.WHITE) "White" else "Black"
         val paths = OpeningFileManager.loadVariationPaths(this, opening)
         knownUciPaths = paths.toMutableList()
+        positionIndex = PositionIndex.fromUciPaths(knownUciPaths)
         val lineCount = if (paths.size == 1 && paths[0].isEmpty()) 0 else paths.size
         binding.tvTrainingSubtitle.text = "$colorName • $lineCount variation line(s)"
 
@@ -280,10 +283,24 @@ class TrainingActivity : AppCompatActivity() {
         val matchingPaths = knownUciPaths.filter { path ->
             path.size > currentPly && path.take(currentPly) == historyUci
         }
-        val isExactEndOfKnownPath = knownUciPaths.any { it == historyUci && it.isNotEmpty() }
+        // Transposition: move order not in file, but this board position is recorded
+        val transposedCandidates = if (matchingPaths.isEmpty() && currentPly > 0) {
+            positionIndex.candidateMoves(chessGame.board)
+        } else emptyList()
+        val isTransposition = transposedCandidates.isNotEmpty()
+        val isExactEndOfKnownPath = knownUciPaths.any { it == historyUci && it.isNotEmpty() } ||
+                (currentPly > 0 && matchingPaths.isEmpty() && !isTransposition &&
+                        positionIndex.isKnown(chessGame.board))
 
         // Available candidate moves at this position
-        val candidateMovesUci = matchingPaths.map { it[currentPly] }.distinct()
+        val candidateMovesUci = if (isTransposition) {
+            transposedCandidates
+        } else {
+            matchingPaths.map { it[currentPly] }.distinct()
+        }
+        val knownLineCount = if (isTransposition) {
+            positionIndex.continuationsFrom(chessGame.board).size
+        } else matchingPaths.size
 
         // Turn indicator
         val activeColorName = if (activeColor == PieceColor.WHITE) "White" else "Black"
@@ -298,16 +315,21 @@ class TrainingActivity : AppCompatActivity() {
         // Branch chips setup: display recorded continuations if any exist
         updateBranchChips(candidateMovesUci)
 
-        if (matchingPaths.isNotEmpty()) {
+        val inFileBadge = if (isTransposition) "TRANSPOSITION" else "IN FILE"
+        val transpositionNote = if (isTransposition) {
+            " Known position via a different move order — Save Line writes its $knownLineCount recorded continuation(s) here."
+        } else ""
+
+        if (candidateMovesUci.isNotEmpty()) {
             if (isAutoPlaySuspendedAfterUndo) {
                 // User just stepped back to explore an alternative or create a branch!
                 binding.tvStatusBadge.text = "BRANCH POINT"
                 binding.tvStatusBadge.backgroundTintList = ContextCompat.getColorStateList(this, R.color.status_amber)
-                binding.tvStatusDescription.text = "At variation point (${matchingPaths.size} line(s) in file). Play a new move to branch, or tap a chip."
+                binding.tvStatusDescription.text = "At variation point ($knownLineCount line(s) in file). Play a new move to branch, or tap a chip.$transpositionNote"
             } else if (isTargetColorTurn && autoPlayEnabled) {
-                binding.tvStatusBadge.text = "IN FILE"
+                binding.tvStatusBadge.text = inFileBadge
                 binding.tvStatusBadge.backgroundTintList = ContextCompat.getColorStateList(this, R.color.status_green)
-                binding.tvStatusDescription.text = "Recorded reply found. Auto-playing response…"
+                binding.tvStatusDescription.text = "Recorded reply found. Auto-playing response…$transpositionNote"
 
                 autoPlayJob?.cancel()
                 autoPlayJob = lifecycleScope.launch {
@@ -320,9 +342,9 @@ class TrainingActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                binding.tvStatusBadge.text = "IN FILE"
+                binding.tvStatusBadge.text = inFileBadge
                 binding.tvStatusBadge.backgroundTintList = ContextCompat.getColorStateList(this, R.color.status_green)
-                binding.tvStatusDescription.text = "Recorded moves available (${matchingPaths.size} line(s)). Play next move or tap a chip."
+                binding.tvStatusDescription.text = "Recorded moves available ($knownLineCount line(s)). Play next move or tap a chip.$transpositionNote"
             }
         } else if (isExactEndOfKnownPath) {
             binding.tvStatusBadge.text = "LINE COMPLETE"
@@ -401,8 +423,11 @@ class TrainingActivity : AppCompatActivity() {
             return
         }
 
+        // Reuse recorded continuations if this line transposed into a known position
+        val expansion = positionIndex.expandWithTranspositions(chessGame.getMoveHistoryUci())
+
         val existingContent = OpeningFileManager.getOrInitializeOpeningContent(this, opening)
-        val updatedContent = OpeningVariationParser.mergeNewVariation(existingContent, playedSanMoves)
+        val updatedContent = OpeningVariationParser.mergeNewVariations(existingContent, expansion.lines)
 
         val parseResult = OpeningFileManager.saveOpeningContent(this, opening, updatedContent)
         val leafPaths = OpeningVariationParser.getLeafVariationPaths(parseResult)
@@ -423,14 +448,18 @@ class TrainingActivity : AppCompatActivity() {
 
         val newPaths = OpeningFileManager.loadVariationPaths(this, updatedOpening)
         knownUciPaths = newPaths.toMutableList()
+        positionIndex = PositionIndex.fromUciPaths(knownUciPaths)
 
         val linesCount = leafPaths.size
         val colorName = if (updatedOpening.targetColor == PieceColor.WHITE) "White" else "Black"
         binding.tvTrainingSubtitle.text = "$colorName • $linesCount variation line(s)"
 
+        val transpositionMsg = if (expansion.graftedCount > 0) {
+            " Transposition detected: reused ${expansion.graftedCount} recorded continuation(s)."
+        } else ""
         Toast.makeText(
             this,
-            "Saved! Line added to ${updatedOpening.name} ($linesCount variation lines total)",
+            "Saved! Line added to ${updatedOpening.name} ($linesCount variation lines total).$transpositionMsg",
             Toast.LENGTH_LONG
         ).show()
 

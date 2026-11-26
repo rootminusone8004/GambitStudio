@@ -1,0 +1,30 @@
+#!/bin/sh
+# When a commit's message is a release version (e.g. "v3.7.8"), update the README
+# release badge to that version and fold the change into the same commit.
+#
+# Enable once per clone:  git config core.hooksPath .githooks
+
+# Avoid recursing on our own amend, and don't touch commits replayed by a rebase.
+[ -n "$GAMBITSTUDIO_BADGE_HOOK" ] && exit 0
+git_dir=$(git rev-parse --git-dir)
+[ -d "$git_dir/rebase-merge" ] || [ -d "$git_dir/rebase-apply" ] && exit 0
+
+subject=$(git log -1 --format=%s)
+version=$(printf '%s\n' "$subject" | sed -n 's/^v\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$/\1/p')
+[ -z "$version" ] && exit 0
+
+root=$(git rev-parse --show-toplevel)
+cd "$root" || exit 0
+
+if ! python3 .github/scripts/update_readme_badge.py "$version"; then
+    echo "post-commit: could not update README badge to $version" >&2
+    exit 0
+fi
+
+if git diff --quiet -- README.md; then
+    exit 0
+fi
+
+git add README.md
+GAMBITSTUDIO_BADGE_HOOK=1 git commit --amend --no-edit --no-verify -q
+echo "post-commit: README badge set to $version (amended into this commit)"

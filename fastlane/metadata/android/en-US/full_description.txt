@@ -1,0 +1,11 @@
+GambitStudio is an offline opening studio for building, branching and training chess openings and gambits. It is the companion app for Chessy: the opening files it exports power Chessy's opening book.
+
+Features:
+• Record lines by playing moves for both sides on the board, with full chess rules and SAN notation.
+• Undo any move to branch into a new variation without losing the lines you already saved.
+• Train an opening as White or Black: the app auto-plays the recorded moves for your side and shows each recorded reply as a chip.
+• Position memory: when a known position is reached through a different move order (a transposition), the app recognises it and continues from the recorded moves, so you don't have to play the rest of the line again. Saving the line writes those continuations under the new move order too.
+• Import and export plain-text opening files with indented branches, ready for Chessy.
+• Lichess brown board and cburnett pieces.
+
+No accounts, no internet connection, no tracking.
